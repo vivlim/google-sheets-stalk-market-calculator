@@ -5,17 +5,21 @@
  * 
  * @author Matthew Conto <https://github.com/drfuzzyness>
  * @author Jeffrey Hu <https://github.com/jyh947>
- * @author Jonathan Ames
+ * @author Jonathan Ames <>
  */
 
 // Which sheets shouldn't be updated
 const BLACKLISTED_SHEET_NAMES = ["Overview", "Summary", "Read Me", "Talk", "Testing"];
 
-// Algorithmic constants
+// What range are the user's inputs located on each page?
+const USER_PRICE_ENTRY_RANGE = "B2:C8";
+
+// How far down on each sheet should the results start appearing?
 const START_ROW_OF_RESULTS_TABLE = 14;
+
+// Algorithmic constants
 const MAX_NUM_OF_ENTRIES = 72;
 const NUM_OF_COLUMNS = 25;
-const USER_PRICE_ENTRY_RANGE = "B2:C8";
 
 function minimumRateFromGivenAndBase(given_price, buy_price) {
   return (given_price - 0.5) / buy_price;
@@ -286,6 +290,11 @@ function generatePatternOne(given_prices) {
   return possibilities;
 }
 
+/**
+ * 
+ * @param {Array<number>} given_prices 
+ * @returns {Object} A single prediction for a pattern
+ */
 function generatePatternTwo(given_prices) {
 
   buy_price = given_prices[0];
@@ -339,6 +348,8 @@ function generatePatternTwo(given_prices) {
  * 
  * @param {Array<number>} given_prices 
  * @param {number} peak_start The index of where the peak theoretically starts
+ * 
+ * @returns {Object} A single prediction for a pattern
  */
 function generatePatternThreeWithPeak(given_prices, peak_start) {
 
@@ -478,6 +489,8 @@ function generatePatternThree(given_prices) {
 /**
  * 
  * @param {Array<number>} sell_prices The input prices from the user
+ * 
+ * @returns {Array<object>} An array containing all of the prediction objects
  */
 function generatePossibilities(sell_prices) {
   let possibilities = [];
