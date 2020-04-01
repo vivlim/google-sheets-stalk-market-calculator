@@ -59,7 +59,7 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
 
   // High Phase 1
   for (let i = 2; i < 2 + high_phase_1_len; i++) {
-    min_pred = Math.ceil(0.9 * buy_price);
+    min_pred = Math.floor(0.9 * buy_price);
     max_pred = Math.ceil(1.4 * buy_price);
     if (!isNaN(given_prices[i])) {
       if (given_prices[i] < min_pred || given_prices[i] > max_pred) {
@@ -80,7 +80,7 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
   let min_rate = 0.6;
   let max_rate = 0.8;
   for (let i = 2 + high_phase_1_len; i < 2 + high_phase_1_len + dec_phase_1_len; i++) {
-    min_pred = Math.ceil(min_rate * buy_price);
+    min_pred = Math.floor(min_rate * buy_price);
     max_pred = Math.ceil(max_rate * buy_price);
 
 
@@ -106,7 +106,7 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
 
   // High Phase 2
   for (let i = 2 + high_phase_1_len + dec_phase_1_len; i < 2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len; i++) {
-    min_pred = Math.ceil(0.9 * buy_price);
+    min_pred = Math.floor(0.9 * buy_price);
     max_pred = Math.ceil(1.4 * buy_price);
     if (!isNaN(given_prices[i])) {
       if (given_prices[i] < min_pred || given_prices[i] > max_pred) {
@@ -127,7 +127,7 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
   min_rate = 0.6;
   max_rate = 0.8;
   for (let i = 2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len; i < 2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len + dec_phase_2_len; i++) {
-    min_pred = Math.ceil(min_rate * buy_price);
+    min_pred = Math.floor(min_rate * buy_price);
     max_pred = Math.ceil(max_rate * buy_price);
 
 
@@ -156,7 +156,7 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
     throw new Error("Phase lengths don't add up");
   }
   for (let i = 2 + high_phase_1_len + dec_phase_1_len + high_phase_2_len + dec_phase_2_len; i < 14; i++) {
-    min_pred = Math.ceil(0.9 * buy_price);
+    min_pred = Math.floor(0.9 * buy_price);
     max_pred = Math.ceil(1.4 * buy_price);
     if (!isNaN(given_prices[i])) {
       if (given_prices[i] < min_pred || given_prices[i] > max_pred) {
@@ -230,7 +230,7 @@ function generatePatternOneWithPeak(given_prices, peak_start) {
   let max_rate = 0.9;
 
   for (let i = 2; i < peak_start; i++) {
-    min_pred = Math.ceil(min_rate * buy_price);
+    min_pred = Math.floor(min_rate * buy_price);
     max_pred = Math.ceil(max_rate * buy_price);
 
 
@@ -258,7 +258,7 @@ function generatePatternOneWithPeak(given_prices, peak_start) {
   min_randoms = [0.9, 1.4, 2.0, 1.4, 0.9, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4]
   max_randoms = [1.4, 2.0, 6.0, 2.0, 1.4, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9]
   for (let i = peak_start; i < 14; i++) {
-    min_pred = Math.ceil(min_randoms[i - peak_start] * buy_price);
+    min_pred = Math.floor(min_randoms[i - peak_start] * buy_price);
     max_pred = Math.ceil(max_randoms[i - peak_start] * buy_price);
 
     if (!isNaN(given_prices[i])) {
@@ -318,7 +318,7 @@ function generatePatternTwo(given_prices) {
   let min_rate = 0.85;
   let max_rate = 0.9;
   for (let i = 2; i < 14; i++) {
-    min_pred = Math.ceil(min_rate * buy_price);
+    min_pred = Math.floor(min_rate * buy_price);
     max_pred = Math.ceil(max_rate * buy_price);
 
 
@@ -375,7 +375,7 @@ function generatePatternThreeWithPeak(given_prices, peak_start) {
   let max_rate = 0.9;
 
   for (let i = 2; i < peak_start; i++) {
-    min_pred = Math.ceil(min_rate * buy_price);
+    min_pred = Math.floor(min_rate * buy_price);
     max_pred = Math.ceil(max_rate * buy_price);
 
 
@@ -402,7 +402,7 @@ function generatePatternThreeWithPeak(given_prices, peak_start) {
   // The peak
 
   for (let i = peak_start; i < peak_start + 2; i++) {
-    min_pred = Math.ceil(0.9 * buy_price);
+    min_pred = Math.floor(0.9 * buy_price);
     max_pred = Math.ceil(1.4 * buy_price);
     if (!isNaN(given_prices[i])) {
       if (given_prices[i] < min_pred || given_prices[i] > max_pred) {
@@ -421,7 +421,7 @@ function generatePatternThreeWithPeak(given_prices, peak_start) {
 
   // TODO this could be made more accurate, I've not bothered with the -1s, or forward/backward calculating of the rate each side of the peak value
   for (let i = peak_start + 2; i < peak_start + 5; i++) {
-    min_pred = Math.ceil(1.4 * buy_price);
+    min_pred = Math.floor(1.4 * buy_price);
     max_pred = Math.ceil(2.0 * buy_price);
     if (!isNaN(given_prices[i])) {
       if (given_prices[i] < min_pred || given_prices[i] > max_pred) {
@@ -443,7 +443,7 @@ function generatePatternThreeWithPeak(given_prices, peak_start) {
     let max_rate = 0.9;
 
     for (let i = peak_start + 5; i < 14; i++) {
-      min_pred = Math.ceil(min_rate * buy_price);
+      min_pred = Math.floor(min_rate * buy_price);
       max_pred = Math.ceil(max_rate * buy_price);
 
 
