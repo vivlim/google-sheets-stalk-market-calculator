@@ -4,7 +4,7 @@
  * Logic stolen from Mike Bryant's excellent webapp translation of Treeki's reverse engineering of the Animal Crossing source code
  * 
  * @author Matthew Conto <https://github.com/drfuzzyness>
- * @author Jeffery Hu <https://github.com/jyh947>
+ * @author Jeffrey Hu <https://github.com/jyh947>
  * @author Jonathan Ames
  */
 
@@ -28,11 +28,11 @@ function maximumRateFromGivenAndBase(given_price, buy_price) {
 /**
  * 
  * @param {Array<number>} given_prices 
- * @param {*} high_phase_1_len 
- * @param {*} dec_phase_1_len 
- * @param {*} high_phase_2_len 
- * @param {*} dec_phase_2_len 
- * @param {*} high_phase_3_len 
+ * @param {number} high_phase_1_len 
+ * @param {number} dec_phase_1_len 
+ * @param {number} high_phase_2_len 
+ * @param {number} dec_phase_2_len 
+ * @param {number} high_phase_3_len 
  * 
  * @returns {Object} Single prediction
  */
@@ -606,7 +606,7 @@ function priceTest()
 
 function sheetTest()
 {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Testing");
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Your Villager Name");
   const price_array = sheet.getRange(USER_PRICE_ENTRY_RANGE).getValues();
   const parsed_prices = parseAmPmPriceRange(price_array, 1, 0);
   Logger.log(parsed_prices);
