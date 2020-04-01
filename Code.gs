@@ -1,6 +1,9 @@
 /**
  * A Google App Script to manage Animal Crossing New Horizon's Stalk Market predictions
  * 
+ * @name google-sheets-stalk-market-calculator
+ * @version 1.0.0
+ * 
  * Logic stolen from Mike Bryant's excellent webapp translation of Treeki's reverse engineering of the Animal Crossing source code
  * 
  * @author Matthew Conto <https://github.com/drfuzzyness>
@@ -32,13 +35,13 @@ function maximumRateFromGivenAndBase(given_price, buy_price) {
 /**
  * 
  * @param {Array<number>} given_prices 
- * @param {number} high_phase_1_len 
- * @param {number} dec_phase_1_len 
- * @param {number} high_phase_2_len 
- * @param {number} dec_phase_2_len 
- * @param {number} high_phase_3_len 
+ * @param {number} high_phase_1_len The length of the first high phase to estimate with
+ * @param {number} dec_phase_1_len The length of the first low phase to estimate with
+ * @param {number} high_phase_2_len The length of the second high phase to estimate with
+ * @param {number} dec_phase_2_len The length of the second low phase to estimate with
+ * @param {number} high_phase_3_len The length of the third high phase to estimate with 
  * 
- * @returns {Object} Single prediction
+ * @returns {object} Single prediction
  */
 function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phase_1_len, high_phase_2_len, dec_phase_2_len, high_phase_3_len) {
 
@@ -179,6 +182,8 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
 /**
  * 
  * @param {Array<number>} given_prices 
+ * 
+ * @returns {Array<object>} An array of all the predictions that resolved 
  */
 function generatePatternZero(given_prices) {
 
@@ -205,7 +210,7 @@ function generatePatternZero(given_prices) {
  * @param {Array<number>} given_prices 
  * @param {number} peak_start The index of where the peak theoretically starts
  * 
- * @returns {Object} A single prediction for a pattern
+ * @returns {object} A single prediction for a pattern
  */
 function generatePatternOneWithPeak(given_prices, peak_start) {
 
@@ -293,7 +298,8 @@ function generatePatternOne(given_prices) {
 /**
  * 
  * @param {Array<number>} given_prices 
- * @returns {Object} A single prediction for a pattern
+ * 
+ * @returns {object} The single pattern two prediction.
  */
 function generatePatternTwo(given_prices) {
 
@@ -349,7 +355,7 @@ function generatePatternTwo(given_prices) {
  * @param {Array<number>} given_prices 
  * @param {number} peak_start The index of where the peak theoretically starts
  * 
- * @returns {Object} A single prediction for a pattern
+ * @returns {object} A single prediction for a pattern
  */
 function generatePatternThreeWithPeak(given_prices, peak_start) {
 
@@ -472,6 +478,8 @@ function generatePatternThreeWithPeak(given_prices, peak_start) {
 /**
  * 
  * @param {Array<number>} given_prices 
+ * 
+ * @returns {Array<object>} An array of all the predictions that resolved 
  */
 function generatePatternThree(given_prices) {
   let possibilities = [];
@@ -546,6 +554,12 @@ function parseAmPmPriceRange(price_array, offset_x, offset_y)
   return sell_prices;
 }
 
+/**
+ * 
+ * @param {Array<object>} predictions_array 
+ * @param {Sheet} sheet The sheet of the spreadsheet we're targeting
+ * @param {number} startRow 
+ */
 function writePredictionsToSheet(predictions_array, sheet, startRow)
 {
   // Create 2D array
@@ -581,12 +595,13 @@ function writePredictionsToSheet(predictions_array, sheet, startRow)
 function updateSheet(sheet)
 {
   // Clear previous contents
-  
   sheet.getRange(START_ROW_OF_RESULTS_TABLE, 1, MAX_NUM_OF_ENTRIES, NUM_OF_COLUMNS).clear({contentsOnly: true});
   
-  const price_array = sheet.getRange("B2:C8").getValues();
+  // Get the user's prices
+  const price_array = sheet.getRange(USER_PRICE_ENTRY_RANGE).getValues();
   const parsed_prices = parseAmPmPriceRange(price_array, 1, 0);
   
+  // Calculate and write the probabilities
   const probabilities = generatePossibilities(parsed_prices);
   writePredictionsToSheet(probabilities, sheet, START_ROW_OF_RESULTS_TABLE);
   
