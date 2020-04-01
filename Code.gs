@@ -21,7 +21,7 @@ const USER_PRICE_ENTRY_RANGE = "B2:C8";
 const START_ROW_OF_RESULTS_TABLE = 14;
 
 // Algorithmic constants
-const MAX_NUM_OF_ENTRIES = 72;
+const MAX_NUM_OF_ENTRIES = 73;
 const NUM_OF_COLUMNS = 25;
 
 function minimumRateFromGivenAndBase(given_price, buy_price) {
@@ -173,7 +173,7 @@ function generatePatternZeroWithLengths(given_prices, high_phase_1_len, dec_phas
     });
   }
   return {
-    pattern_description: "high, decreasing, high, decreasing, high",
+    pattern_description: "Random",
     pattern_number: 0,
     prices: predicted_prices
   };
@@ -276,7 +276,7 @@ function generatePatternOneWithPeak(given_prices, peak_start) {
     });
   }
   return {
-    pattern_description: "decreasing, high spike, random lows",
+    pattern_description: "Large Spike",
     pattern_number: 1,
     prices: predicted_prices
   };
@@ -343,7 +343,7 @@ function generatePatternTwo(given_prices) {
   }
 
   return [{
-    pattern_description: "always decreasing",
+    pattern_description: "Decreasing",
     pattern_number: 2,
     prices: predicted_prices
   }];
@@ -469,7 +469,7 @@ function generatePatternThreeWithPeak(given_prices, peak_start) {
   }
 
   return {
-    pattern_description: "decreasing, spike, decreasing",
+    pattern_description: "Small Spike",
     pattern_number: 3,
     prices: predicted_prices
   };
