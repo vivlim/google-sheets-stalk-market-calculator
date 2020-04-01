@@ -21,7 +21,7 @@ const USER_PRICE_ENTRY_RANGE = "B2:C8";
 const START_ROW_OF_RESULTS_TABLE = 14;
 
 // Algorithmic constants
-const MAX_NUM_OF_ENTRIES = 73;
+const MAX_NUM_OF_ENTRIES = 72;
 const NUM_OF_COLUMNS = 25;
 
 function minimumRateFromGivenAndBase(given_price, buy_price) {
