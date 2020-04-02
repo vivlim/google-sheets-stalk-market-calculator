@@ -12,7 +12,7 @@
  */
 
 // Which sheets shouldn't be updated
-const BLACKLISTED_SHEET_NAMES = ["Overview", "Summary", "Read Me", "Talk", "Testing"];
+const BLACKLISTED_SHEET_NAMES = [ "Overview", "Summary", "Read Me", "Talk", "Testing"];
 
 // What range are the user's inputs located on each page?
 const USER_PRICE_ENTRY_RANGE = "B2:C8";
@@ -535,6 +535,12 @@ function parseAmPmPriceRange(price_array, offset_x, offset_y)
     return [];
   }
   
+  // Check for invalid buy price error
+  if((buy_price < 90 || buy_price > 110) && buy_price !== 0 && buy_price !== undefined )
+  {
+    throw new Error("Buy Price of " + buy_price + " is not possible.");
+  }
+  
   let sell_prices = [buy_price, buy_price];
   for(let x = offset_x; x < price_array.length; x++)
   {
@@ -594,17 +600,33 @@ function writePredictionsToSheet(predictions_array, sheet, startRow)
 
 function updateSheet(sheet)
 {
-  // Clear previous contents
-  sheet.getRange(START_ROW_OF_RESULTS_TABLE, 1, MAX_NUM_OF_ENTRIES, NUM_OF_COLUMNS).clear({contentsOnly: true});
+  try
+  {
+    clearProbabilities(sheet);
   
-  // Get the user's prices
-  const price_array = sheet.getRange(USER_PRICE_ENTRY_RANGE).getValues();
-  const parsed_prices = parseAmPmPriceRange(price_array, 1, 0);
-  
-  // Calculate and write the probabilities
-  const probabilities = generatePossibilities(parsed_prices);
-  writePredictionsToSheet(probabilities, sheet, START_ROW_OF_RESULTS_TABLE);
-  
+    // Get the user's prices
+    const price_array = sheet.getRange(USER_PRICE_ENTRY_RANGE).getValues();
+    const parsed_prices = parseAmPmPriceRange(price_array, 1, 0);
+    
+    // Only continue if there are parsed prices
+    if(parsed_prices.length > 0)
+    {
+      // Calculate and write the probabilities
+      const probabilities = generatePossibilities(parsed_prices);
+      
+      if(probabilities === undefined || probabilities.length === 0 || (probabilities.length === 1 && probabilities[0] === undefined))
+      {
+        throw new Error("Your prices do not match any known pattern.");
+      }
+      
+      writePredictionsToSheet(probabilities, sheet, START_ROW_OF_RESULTS_TABLE);
+    }
+  }
+  catch (error)
+  {
+    writeError(error, sheet);
+    return;
+  }
 }
 
 function onEdit(edit)
@@ -634,10 +656,20 @@ function priceTest()
 
 function sheetTest()
 {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Your Villager Name");
-  const price_array = sheet.getRange(USER_PRICE_ENTRY_RANGE).getValues();
-  const parsed_prices = parseAmPmPriceRange(price_array, 1, 0);
-  Logger.log(parsed_prices);
-  const probabilities = generatePossibilities(parsed_prices);
-  writePredictionsToSheet(probabilities, sheet, START_ROW_OF_RESULTS_TABLE);
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Jeffrey");
+  updateSheet(sheet);
+}
+
+function clearProbabilities(sheet)
+{
+  // Clear previous contents
+  sheet.getRange(START_ROW_OF_RESULTS_TABLE, 1, MAX_NUM_OF_ENTRIES, NUM_OF_COLUMNS).clear({contentsOnly: true});
+}
+
+function writeError(errorDescription, sheet)
+{
+  clearProbabilities(sheet);
+  
+  sheet.getRange(START_ROW_OF_RESULTS_TABLE, 1).setValue("Error");
+  sheet.getRange(START_ROW_OF_RESULTS_TABLE, 2).setValue(errorDescription);
 }
