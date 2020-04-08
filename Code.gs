@@ -10,9 +10,13 @@
  * @author Jeffrey Hu <https://github.com/jyh947>
  * @author Jonathan Ames <>
  */
+const FORECAST_SHEET_PREFIX = "🔮";
+const DATA_SHEET_NAME = "Turnip Prices";
+const TEMPLATE_SHEET_NAME = "Forecast Template";
+const TOWN_DATA_RANGE = "B:O";
 
 // Which sheets shouldn't be updated
-const BLACKLISTED_SHEET_NAMES = [ "Overview", "Summary", "Read Me", "Talk", "Testing"];
+const BLACKLISTED_SHEET_NAMES = [ "Overview", "Summary", "Read Me", "Talk", "Testing", "Turnip Prices", "Hello"];
 
 // What range are the user's inputs located on each page?
 const USER_PRICE_ENTRY_RANGE = "B2:C8";
@@ -23,6 +27,81 @@ const START_ROW_OF_RESULTS_TABLE = 14;
 // Algorithmic constants
 const MAX_NUM_OF_ENTRIES = 72;
 const NUM_OF_COLUMNS = 25;
+
+// mappings fom the source data to the stalk market tool sheets
+const COL_TO_DEST_CELL_MAP = ["B2", "B3", "C3", "B4", "C4", "B5", "C5", "B6", "C6", "B7", "C7", "B8", "C8"];
+
+// can map this to a button
+function regenerateButton() {
+  let spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = spreadsheet.getSheetByName(DATA_SHEET_NAME);
+  makeForecastSheets(sheet);
+}
+
+function makeForecastSheets(sheet) {
+  let town_data = sheet.getRange(TOWN_DATA_RANGE);
+  let num_cols = town_data.getWidth();
+  let num_rows = town_data.getHeight(); // is number of towns + 1 for header
+  
+  // clean up first
+  //removeForecastSheets();
+  
+  let spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  let town_names = "";
+  let template_sheet = spreadsheet.getSheetByName(TEMPLATE_SHEET_NAME);
+  
+  for (let row = 2; row < num_rows; row++) { // skip first row
+    let town_name = town_data.getCell(row, 1).getValue();
+    if (town_name == "") {
+      return; // stop when we start to hit empty rows
+    }
+    
+    const forecast_sheet_name = FORECAST_SHEET_PREFIX + town_name;
+    let forecast_sheet = spreadsheet.getSheetByName(forecast_sheet_name);
+    
+    if (!forecast_sheet)
+    {
+      forecast_sheet = spreadsheet.insertSheet(FORECAST_SHEET_PREFIX + town_name, {template: template_sheet});
+    }
+    
+    //forecast_sheet.getRange("a1").getCell(1, 1).setValue("hello world");
+    
+    let forecast_needs_refresh = false;
+    
+    // copy data
+    for (var i = 0; i < COL_TO_DEST_CELL_MAP.length; i++) {
+      let price = town_data.getCell(row, i+2).getValue();
+      if (price == "") {
+        continue;
+      }
+      let dest_cell = forecast_sheet.getRange(COL_TO_DEST_CELL_MAP[i]).getCell(1,1);
+      
+      if (dest_cell.getValue() == price) {
+        continue;
+      }
+      
+      dest_cell.setValue(price);
+      forecast_needs_refresh = true;
+    }
+    
+    if (forecast_needs_refresh) {
+      updateSheet(forecast_sheet);
+    }
+  }
+  
+}
+
+function removeForecastSheets() {
+  let spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = spreadsheet.getSheets();
+  for (let sheet = 0; sheet < sheets.length; sheet++) {
+    //SpreadsheetApp.getUi().alert(sheets[sheet]);
+    if (sheets[sheet].getName().startsWith(FORECAST_SHEET_PREFIX)){
+      spreadsheet.deleteSheet(sheets[sheet]);
+    }
+  }
+}
 
 function minimumRateFromGivenAndBase(given_price, buy_price) {
   return (given_price - 0.5) / buy_price;
@@ -634,6 +713,11 @@ function onEdit(edit)
   const sheet = edit.range.getSheet();
   const sheetName = sheet.getName();
   
+  if (sheetName == DATA_SHEET_NAME) {
+    makeForecastSheets(sheet);
+  }
+  
+  /*
   for(let i = 0; i < BLACKLISTED_SHEET_NAMES.length; i++)
   {
     if(sheetName == BLACKLISTED_SHEET_NAMES[i])
@@ -643,7 +727,10 @@ function onEdit(edit)
     }
   }
   
-  updateSheet(sheet);
+  // VIV HACK: assume that only sheets that have "Date" at A1 should be updated.
+  if (sheet.getRange(1, 1).getDisplayValue() == "Date"){
+    updateSheet(sheet); 
+  }*/
 }
 
 function priceTest()
